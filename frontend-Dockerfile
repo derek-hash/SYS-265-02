@@ -1,0 +1,11 @@
+# Use Nginx as a lightweight web server
+FROM nginx:alpine  
+
+# Set working directory
+WORKDIR /usr/share/nginx/html
+
+# Copy frontend files (index.html, styles.css, app.js)
+COPY . .  
+
+# Expose port 80
+EXPOSE 80
