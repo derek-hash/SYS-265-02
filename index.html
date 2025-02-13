@@ -1,10 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <script>
+        // Function to add a task
+        async function addTask() {
+            const title = document.getElementById('task-title').value;
+            const description = document.getElementById('task-description').value;
+
+            if (!title || !description) {
+                alert('Please provide both a title and a description!');
+                return;
+            }
+
+            const taskData = {
+                title: title,
+                description: description
+            };
+
+            try {
+                // Send POST request to backend to add the task
+                const response = await fetch('http://localhost:5000/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const newTask = await response.json();
+                    console.log('New task added:', newTask);
+
+                    // Optionally, update the task list on the frontend
+                    fetchTasks();  // To refresh the task list
+                } else {
+                    console.error('Error adding task:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error sending request:', error);
+            }
+        }
+
+        // Function to fetch tasks and display them
+        async function fetchTasks() {
+            const response = await fetch('http://localhost:5000/tasks');
+            const tasks = await response.json();
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = ''; // Clear the existing list
+
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = `${task.title}: ${task.description}`;
+                taskList.appendChild(li);
+            });
+        }
+
+        // Fetch tasks on page load
+        window.onload = fetchTasks;
+    </script>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <p>Welcome to your Task Manager application!</p>
+    <h3>Welcome to your Task Manager application</h3>
+
+    <div>
+        <input type="text" id="task-title" placeholder="Task Title" />
+        <input type="text" id="task-description" placeholder="Task Description" />
+        <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <ul id="task-list">
+        <!-- Task list will appear here -->
+    </ul>
 </body>
 </html>
