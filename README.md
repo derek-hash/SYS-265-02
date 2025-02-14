@@ -104,4 +104,5 @@ sudo systemctl stop apache2  # Stop Apache if running
 L) Manual File Creation
 mkdir -p ~/task-manager/frontend
 nano ~/task-manager/frontend/index.html  # Create frontend HTML file
+________________
 [READ ME.txt](https://github.com/user-attachments/files/18804705/READ.ME.txt)
