@@ -1,0 +1,115 @@
+# Task Manager App - Working Commands
+
+This document contains all the commands that were successfully used in setting up and running the Task Manager application using Docker, Docker Compose, Flask, and Nginx.
+
+## Prerequisites
+Ensure that you have the following installed on your system:
+- Docker
+- Docker Compose
+- Git (for version control)
+
+---
+
+## 1. Verify Docker and Docker Compose Installation
+```sh
+docker --version
+docker-compose --version
+```
+
+---
+
+## 2. Creating Directories
+```sh
+mkdir -p /home/champuser/task-manager
+mkdir -p /home/champuser/task-manager-backups
+```
+
+---
+
+## 3. Navigating to the Project Directory
+```sh
+cd /home/champuser/task-manager
+```
+
+---
+
+## 4. Moving Files to Backups
+```sh
+mv /home/champuser/task-manager/somefile.bak /home/champuser/task-manager-backups/
+```
+
+---
+
+## 5. Checking Directory Structure
+```sh
+ls /home/champuser/
+ls /home/champuser/task-manager/
+```
+
+---
+
+## 6. Building and Running the Docker Containers
+```sh
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+---
+
+## 7. Checking Running Containers
+```sh
+docker-compose ps
+```
+
+---
+
+## 8. Viewing Docker Logs
+```sh
+docker-compose logs
+```
+
+---
+
+## 9. Stopping and Removing Containers
+```sh
+docker-compose down
+```
+
+---
+
+## 10. Rebuilding the Frontend & Backend Services
+```sh
+docker-compose up --build
+```
+
+---
+
+## 11. Checking if Ports are Open
+```sh
+netstat -tulnp | grep :8080
+netstat -tulnp | grep :5000
+```
+
+---
+
+## 12. Removing Unused Docker Resources
+```sh
+docker system prune -a --volumes
+```
+
+---
+
+## 13. Updating Docker Compose
+```sh
+sudo rm /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/latest/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+---
+
+## 14. Restarting the Application
+```sh
+docker-compose down
+docker-compose up --build
+```
