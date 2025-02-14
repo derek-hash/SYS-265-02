@@ -1,3 +1,5 @@
+![task manager](https://github.com/user-attachments/assets/5903e1ff-c3fc-4a7e-bf29-0b5a7eb97d46)
+
 Task Manager - Deployment Commands
 1️⃣ Installing Docker and Docker Compose
 sudo apt update && sudo apt upgrade -y  # Update system packages
