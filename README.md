@@ -61,50 +61,112 @@ curl -s https://raw.githubusercontent.com/derek-hash/SYS-265-02/refs/heads/Docke
 cat frontend-Dockerfile
 
 ________________
-4️⃣ Setting Up GitHub Repository
-git init  # Initialize Git in the project directory
-git remote add origin https://github.com/derek-hash/task-manager-docker.git
-git branch -M main  # Ensure main branch is used
-Adding and Committing Files
-git add .  # Add all files
-git commit -m "Added project files from cURL downloads and verified contents"
-git push -u origin main  # Push changes to GitHub
-
-________________
-5️⃣ Additional Useful Commands
-A) Creating Directories
-mkdir -p /home/champuser/task-manager
+1️⃣ Creating and Managing Directories
+A) Creating Required Directories
+Create the main project and backup directories:
+
+sh
+Copy
+Edit
+mkdir -p /home/champuser/task-manager
 mkdir -p /home/champuser/task-manager-backups
-B) Navigating to the Project Directory
-cd /home/champuser/task-manager
-C) Moving Files to Backups
-mv /home/champuser/task-manager/somefile.bak /home/champuser/task-manager-backups/
-D) Checking Directory Structure
-ls /home/champuser/
+B) Navigating to the Project Directory
+Move into the project directory:
+
+sh
+Copy
+Edit
+cd /home/champuser/task-manager
+C) Moving Files to Backups
+Move a backup file to the backup directory:
+
+sh
+Copy
+Edit
+mv /home/champuser/task-manager/somefile.bak /home/champuser/task-manager-backups/
+D) Checking Directory Structure
+List files in the user home and project directories:
+
+sh
+Copy
+Edit
+ls /home/champuser/
 ls /home/champuser/task-manager/
-E) Viewing Docker Logs
-docker-compose logs
-F) Rebuilding the Frontend & Backend Services
-docker-compose up --build
-G) Checking if Ports are Open
-netstat -tulnp | grep :8080
+2️⃣ Docker Management
+E) Viewing Docker Logs
+Check logs for running services:
+
+sh
+Copy
+Edit
+docker-compose logs
+F) Rebuilding Frontend & Backend Services
+Rebuild and start the application:
+
+sh
+Copy
+Edit
+docker-compose up --build
+G) Checking if Ports are Open
+Verify if the required ports (8080 & 5000) are in use:
+
+sh
+Copy
+Edit
+netstat -tulnp | grep :8080
 netstat -tulnp | grep :5000
-H) Updating Docker Compose
-sudo rm /usr/local/bin/docker-compose
+H) Updating Docker Compose
+Update Docker Compose to the latest version:
+
+sh
+Copy
+Edit
+sudo rm /usr/local/bin/docker-compose
 sudo curl -L "https://github.com/docker/compose/releases/download/latest/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
-I) Restarting the Application
-docker-compose down
+I) Restarting the Application
+Stop and restart the application:
+
+sh
+Copy
+Edit
+docker-compose down
 docker-compose up --build
-J) Troubleshooting Docker Containers
-docker-compose logs frontend  # Check frontend logs
-docker logs task_manager_frontend  # Get detailed frontend logs
-docker ps -a | grep task_manager_frontend  # Check if frontend exists
-K) Fixing Port Conflicts
-sudo netstat -tulnp | grep :80  # Check if port 80 is in use
-sudo systemctl stop apache2  # Stop Apache if running
-L) Manual File Creation
-mkdir -p ~/task-manager/frontend
-nano ~/task-manager/frontend/index.html  # Create frontend HTML file
+3️⃣ Troubleshooting & Fixes
+J) Troubleshooting Docker Containers
+Check Logs for Issues:
+sh
+Copy
+Edit
+docker-compose logs frontend  # Check frontend logs  
+docker logs task_manager_frontend  # Get detailed frontend logs  
+Check if Frontend Exists:
+sh
+Copy
+Edit
+docker ps -a | grep task_manager_frontend
+K) Fixing Port Conflicts
+Check if Port 80 is in Use:
+sh
+Copy
+Edit
+sudo netstat -tulnp | grep :80
+Stop Apache if Running:
+sh
+Copy
+Edit
+sudo systemctl stop apache2
+4️⃣ Manual File Creation & Editing
+L) Creating Directories & Files
+Create a Frontend Directory:
+sh
+Copy
+Edit
+mkdir -p ~/task-manager/frontend
+Create an HTML File for the Frontend:
+sh
+Copy
+Edit
+nano ~/task-manager/frontend/index.html
 ________________
 [READ ME.txt](https://github.com/user-attachments/files/18804705/READ.ME.txt)
