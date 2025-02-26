@@ -20,7 +20,7 @@ openssl genrsa -out /root/websrv.key 2048
 openssl req -new -key /root/websrv.key -out /root/websrv.csr \
     -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310"
 
-scp /root/websrv.csr root@<CA_SERVER_IP>:/root/ca/ **(In practicing case it would be the CA-SEC VM as the CA_Server)**
+scp /root/websrv.csr root@<CA_SERVER_IP>:/root/ca/ __(In practicing case it would be the CA-SEC VM as the CA_Server)__
 
 openssl ca -in /root/ca/websrv.csr -out /root/ca/websrv.crt -days 365 \
     -cert /root/ca/cacert.pem -keyfile /root/ca/private/cakey.pem
