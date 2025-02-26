@@ -13,7 +13,17 @@ chmod 700 /root/ca/private
 touch /root/ca/index.txt
 echo 1000 > /root/ca/serial
 
-
-
 openssl req -x509 -newkey rsa:4096 -nodes -keyout /root/ca/private/cakey.pem \
     -out /root/ca/cacert.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310" -sha256
+
+openssl genrsa -out /root/websrv.key 2048
+openssl req -new -key /root/websrv.key -out /root/websrv.csr \
+    -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310"
+
+scp /root/websrv.csr root@<CA_SERVER_IP>:/root/ca/ **(In practicing case it would be the CA-SEC VM as the CA_Server)**
+
+openssl ca -in /root/ca/websrv.csr -out /root/ca/websrv.crt -days 365 \
+    -cert /root/ca/cacert.pem -keyfile /root/ca/private/cakey.pem
+
+scp /root/ca/websrv.crt root@<WEB_SERVER_IP>:/root/ **(In practicing case it would be the rocky VM as the Web Server)**
+
