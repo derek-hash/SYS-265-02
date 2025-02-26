@@ -1,10 +1,19 @@
+hostnamectl set-hostname ca-YourFirstName
+
+
+systemctl enable --now sshd
+firewall-cmd --permanent --add-port=22/tcp
+firewall-cmd --reload
+
+
+dnf install -y openssl openssl-devel
+
+mkdir -p /root/ca/{certs,crl,newcerts,private}
+chmod 700 /root/ca/private
+touch /root/ca/index.txt
+echo 1000 > /root/ca/serial
 
 
 
-
-
-
-
-
-  openssl req -x509 -newkey rsa:4096 -nodes -keyout /root/ca/private/cakey.pem \
-      -out /root/ca/cacert.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310" -sha256
+openssl req -x509 -newkey rsa:4096 -nodes -keyout /root/ca/private/cakey.pem \
+    -out /root/ca/cacert.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310" -sha256
