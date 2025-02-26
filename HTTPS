@@ -1,0 +1,10 @@
+
+
+
+
+
+
+
+
+  openssl req -x509 -newkey rsa:4096 -nodes -keyout /root/ca/private/cakey.pem \
+      -out /root/ca/cacert.pem -days 3650 -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310" -sha256
