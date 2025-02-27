@@ -1,3 +1,5 @@
+Follow these commands and It should work
+
 hostnamectl set-hostname ca-YourFirstName
 
 
@@ -20,10 +22,23 @@ openssl genrsa -out /root/websrv.key 2048
 openssl req -new -key /root/websrv.key -out /root/websrv.csr \
     -subj "/C=US/ST=State/L=City/O=Joyce310/OU=Joyce310/CN=Joyce310"
 
-scp /root/websrv.csr root@<CA_SERVER_IP>:/root/ca/ **In practicing case it would be the CA-SEC VM as the CA_Server**
+scp /root/websrv.csr root@<CA_SERVER_IP>:/root/ca/         **In practicing case it would be the CA-SEC VM as the CA_Server**
 
-openssl ca -in /root/ca/websrv.csr -out /root/ca/websrv.crt -days 365 \
-    -cert /root/ca/cacert.pem -keyfile /root/ca/private/cakey.pem
+openssl x509 -req -in /root/ca/websrv.csr -CA /root/ca/cacert.pem -CAkey /root/ca/private/cakey.pem -CAcreateserial -out /root/ca/websrv.crt -days 365 -sha256
 
-scp /root/ca/websrv.crt root@<WEB_SERVER_IP>:/root/ **(In practicing case it would be the rocky VM as the Web Server)**
 
+scp /root/ca/websrv.crt root@<WEB_SERVER_IP>:/root/       **In practicing case it would be the rocky VM as the Web Server**
+
+dnf install -y mod_ssl
+mv /root/websrv.crt /etc/pki/tls/certs/
+mv /root/websrv.key /etc/pki/tls/private/
+
+systemctl enable --now httpd
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
+cat /root/ca/cacert.pem
+cat /etc/pki/tls/private/websrv.key
+cat /etc/pki/tls/certs/websrv.crt
+
+https://<WEB_SERVER_IP>
