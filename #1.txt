@@ -1,0 +1,43 @@
+- name: Theme 01 - Basic System Configuration and Hardening
+  hosts: all
+  become: yes
+  tasks:
+    # System Administration
+    - name: Update all packages
+      package:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+    - name: Set timezone
+      timezone:
+        name: America/New_York
+      
+    # System Hardening
+    - name: Disable unused services
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - cups
+        - bluetooth
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+    - name: Configure password complexity policy
+      win_security_policy:
+        section: System Access
+        key: PasswordComplexity
+        value: 1
+      when: ansible_os_family == "Windows"
+
+    # AD DS GPO Hardening
+    - name: Enable account lockout policy
+      win_gpo:
+        name: Account Lockout Policy
+        state: present
+        setting:
+          - Computer Configuration\Windows Settings\Security Settings\Account Policies\Account Lockout Policy\Account lockout duration: 30
+          - Computer Configuration\Windows Settings\Security Settings\Account Policies\Account Lockout Policy\Account lockout threshold: 5
+          - Computer Configuration\Windows Settings\Security Settings\Account Policies\Account Lockout Policy\Reset account lockout counter after: 30
+      when: inventory_hostname == "AD01"
