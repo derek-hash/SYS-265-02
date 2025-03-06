@@ -1,0 +1,37 @@
+- name: Theme 02 - Network Security and Logging
+  hosts: all
+  become: yes
+  tasks:
+    # System Administration
+    - name: Configure NTP servers
+      template:
+        src: ntp.conf.j2
+        dest: /etc/ntp.conf
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+    - name: Enable Windows Firewall
+      win_firewall:
+        state: enabled
+      when: ansible_os_family == "Windows"
+
+    # System Hardening
+    - name: Configure SSH hardening
+      template:
+        src: sshd_config.j2
+        dest: /etc/ssh/sshd_config
+      when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+    - name: Enable Windows Defender
+      win_shell: Set-MpPreference -DisableRealtimeMonitoring $false
+      when: ansible_os_family == "Windows"
+
+    # AD DS GPO Hardening
+    - name: Configure Windows Event Log settings
+      win_gpo:
+        name: Event Log Policy
+        state: present
+        setting:
+          - Computer Configuration\Windows Settings\Security Settings\Event Log\Maximum application log size: 32768
+          - Computer Configuration\Windows Settings\Security Settings\Event Log\Maximum security log size: 196608
+          - Computer Configuration\Windows Settings\Security Settings\Event Log\Maximum system log size: 32768
+      when: inventory_hostname == "AD01"
