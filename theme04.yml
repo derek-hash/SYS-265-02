@@ -1,0 +1,46 @@
+- name: Theme 04 - RBAC Implementation (Registry Method)
+  hosts: all
+  become: yes
+
+  tasks:
+    # SYSTEM ADMINISTRATION
+    - name: Create Security Groups
+      ansible.builtin.group:
+        name: security_admins
+        state: present
+      when: ansible_os_family == 'Rocky'
+
+    - name: Configure Local Windows Groups
+      ansible.windows.win_group:
+        name: SOC_Team
+        description: Security Operations Members
+        state: present
+
+    # SYSTEM HARDENING
+    - name: Configure sudoers File
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/security
+        content: "%security_admins ALL=(ALL) /usr/bin/systemctl restart sshd"
+        validate: visudo -cf %s
+      when: ansible_os_family == 'Rocky'
+
+    - name: Restrict Privileged Accounts
+      ansible.windows.win_user_right:
+        name: SeDenyInteractiveLogonRight
+        users: "Guest"
+        action: add
+
+    # AD GPO HARDENING (Using Registry Edits)
+    - name: Restrict Removable Storage (Prevent Installation of Matching Device IDs)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions"
+        name: "DenyDeviceIDs"
+        data: 1
+        type: dword
+
+    - name: Restrict Removable Storage (Device Installation Restrictions)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Restrictions"
+        name: "DenyRemovableDevices"
+        data: 1
+        type: dword
