@@ -1,0 +1,46 @@
+- name: Theme 03 - Compliance Monitoring (Registry Method)
+  hosts: all
+  become: yes
+
+  tasks:
+    # SYSTEM ADMINISTRATION
+    - name: Schedule Daily Security Audit
+      ansible.builtin.cron:
+        name: "Daily Security Check"
+        minute: "0"
+        hour: "3"
+        job: "/opt/security_audit.sh"
+      when: ansible_os_family == 'Rocky'
+
+    - name: Configure Windows Event Log Retention
+      ansible.windows.win_eventlog:
+        name: Security
+        retention_days: 90
+        max_size: 512000
+
+    # SYSTEM HARDENING
+    - name: Audit SUID/SGID Files
+      ansible.builtin.command: find / -xdev -type f -perm /6000
+      changed_when: false
+      register: suid_audit
+      when: ansible_os_family == 'Rocky'
+
+    - name: Check Local Admin Groups
+      ansible.windows.win_shell: Get-LocalGroupMember Administrators
+      register: admin_members
+      failed_when: "'Domain Admins' not in admin_members.stdout"
+
+    # AD GPO HARDENING (Using Registry Edits)
+    - name: Enable Audit Account Logon
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa"
+        name: "AuditAccountLogon"
+        data: 3  # Enable auditing of account logon events
+        type: dword
+
+    - name: Enable Audit Logon Events
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa"
+        name: "AuditLogonEvents"
+        data: 3  # Enable auditing of logon events
+        type: dword
