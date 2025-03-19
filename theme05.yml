@@ -1,0 +1,47 @@
+- name: Theme 05 - Service Hardening (Registry Method)
+  hosts: all
+  become: yes
+
+  tasks:
+    # SYSTEM ADMINISTRATION
+    - name: Disable Unused Services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+      loop:
+        - cups
+        - rpcbind
+      when: ansible_os_family == 'Rocky'
+
+    - name: Configure Windows Features
+      ansible.windows.win_feature:
+        name: "Telnet-Client"
+        state: absent
+
+    # SYSTEM HARDENING
+    - name: Enable Log Rotation
+      ansible.builtin.copy:
+        dest: /etc/logrotate.d/security
+        content: |
+          /var/log/secure {
+              rotate 7
+              daily
+              compress
+          }
+      when: ansible_os_family == 'Rocky'
+
+    # AD GPO HARDENING (Using Registry Edits)
+    - name: Harden DNS Client (Enable DNSSEC)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SystemDnsResolver"
+        name: "EnableSecurityValidation"
+        data: 1
+        type: dword
+
+    - name: Harden DNS Client (Require Security Signature)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SystemDnsResolver"
+        name: "RequireSecuredResponses"
+        data: 1
+        type: dword
