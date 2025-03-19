@@ -1,0 +1,59 @@
+- name: Theme 01 - Unified Configuration Management (Registry Method)
+  hosts: windows,rocky
+  become: yes
+  vars:
+    standard_timezone: America/New_York
+    allowed_ips: 192.168.1.0/24
+
+  tasks:
+    # SYSTEM ADMINISTRATION (2 elements)
+    - name: Set timezone on Rocky
+      ansible.builtin.timezone:
+        name: "{{ standard_timezone }}"
+      when: ansible_os_family == 'Rocky'
+
+    - name: Configure Windows Time Service
+      ansible.windows.win_service:
+        name: W32Time
+        start_mode: auto
+        state: started
+      when: ansible_os_family == 'Windows'
+
+    # SYSTEM HARDENING (2 elements)
+    - name: Configure firewalld on Rocky
+      ansible.posix.firewalld:
+        zone: public
+        permanent: true
+        source: "{{ allowed_ips }}"
+        state: enabled
+      when: ansible_os_family == 'Rocky'
+
+    - name: Enable Windows Defender Firewall
+      ansible.windows.win_firewall:
+        profiles:
+          - Domain
+          - Private
+          - Public
+        state: enabled
+
+    # AD GPO HARDENING (3 elements) - Using Registry Edits
+    - name: Enforce Password Policy (Min Length)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa"
+        name: "MinimumPasswordLength"
+        data: 12
+        type: dword
+
+    - name: Enforce Password Policy (Complexity)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa"
+        name: "PasswordComplexity"
+        data: 1
+        type: dword
+
+    - name: Restrict User Rights (Deny Interactive Logon for Guest)
+      ansible.windows.win_regedit:
+        path: "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\Rights\\SeDenyInteractiveLogonRight"
+        name: "Guest"
+        data: "S-1-5-32-545"  # BUILTIN\Guests SID
+        type: string
